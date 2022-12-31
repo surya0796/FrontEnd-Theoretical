@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Image</title>
+  <style>
+    #view-image {
+      width: 50%;
+      height: 200px;
+      background-position: cover;
+    }
+
+    .learn-form {
+      display: flex;
+      flex-direction: column;
+      max-width: 350px;
+      gap: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <h2>FormData()</h2>
+    <span>
+      The FormData() constructor creates a new FormData object.An HTML &ltform&gt element — when specified, the FormData
+      object will be populated with the form's current keys/values using the name property of each element for the keys
+      and their submitted value for the values. It will also encode file input content.
+    </span>
+    <br>
+    <pre>
+    <code>
+      const form = document.getElementById('form');
+      const formData = new FormData(form);
+      console.log(formData)
+      // {
+        text1: foo,
+        text2: bar,
+        text2: baze
+      }
+    </code>
+  </pre>
+  </div>
+
+  <div>
+    <h2>UrlSearchParameter</h2>
+    <span>
+      I think of URLSearchParams as an equivalent convenience to URLs as FormData was to forms. So what can you do with
+      it? Given a URL string, you can easily extract parameter values:
+    </span>
+    <br>
+    <pre>
+  <code>
+  // Can also constructor from another URLSearchParams
+  const params = new URLSearchParams('q=search+string&version=1&person=Eric');
+  params.get('q') === "search string"
+  params.get('version') === "1"
+  Array.from(params).length === 3
+  </code>
+</pre>
+  </div>
+  <form class="learn-form" id="learn-form">
+    <label for="firstName">First Name</label>
+    <input id="firstName" name="firstName" type="text">
+    <label for="lastName">Last Name</label>
+    <input id="lastName" name="lastName" type="text">
+    <label for="fullName">Full Name</label>
+    <input id="fullName" name="fullName" type="text">
+    <input type="file" id="choose-file" name="File" accept="image/jpeg image/png image/jpg image/svg">
+    <input type="submit" value="Submit Data">
+  </form>
+
+  <div id="view-image"></div>
+
+  <script>
+
+    // submiting form using formData and URLSearchParams
+    const form = document.querySelector(".learn-form")
+    form.addEventListener("submit", function (e) {
+      e.preventDefault()
+      const formData = new FormData(this)
+      const urlParams = new URLSearchParams()
+
+      // Use this to check inside the FormData, as it is not directly consolable
+      for (var pair of formData.entries()) {
+        console.log(pair[0] + ', ' + JSON.stringify(pair[1]));
+      }
+      fetch({
+        method:'post',
+        body:formData
+      }).then(function(res){
+        return res.text()
+      }).then(function(result){
+        console.log(result)
+      })
+
+    })
+
+    // file converted to Base 64 and then previewed in a div
+    const input = document.querySelector("#choose-file")
+    const imgContainer = document.querySelector("#view-image")
+    input.addEventListener('change', function () {
+      const reader = new FileReader()
+      reader.addEventListener('load', function () {
+        var img = reader.result;
+        console.log(typeof img);
+        imgContainer.style.background = `url(${img})`
+      })
+      reader.readAsDataURL(this.files[0])
+    })
+
+  </script>
+</body>
+
+</html>
