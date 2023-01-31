@@ -27,8 +27,6 @@ There are a couple potential downsides to be aware of when importing and exporti
 -   Second, JS modules can have "circular reference" problems if two modules try to import each other. This can result in imports being undefined, which will likely break the code that needs that import. Specifically in the case of "ducks" or slices, this can occur if slices defined in two different files both want to respond to actions defined in the other file.If you encounter this, you may need to restructure your code in a way that avoids the circular references. This will usually require extracting shared code to a separate common file that both modules can import and use. In this case, you might define some common action types in a separate file using createAction, import those action creators into each slice file, and handle them using the extraReducers argument.
 
 
-
-
 The only truly necessary part here is the reducer itself. Consider the other parts:
 
 -   We could have written the action types as inline strings in both places
@@ -53,3 +51,10 @@ CreateAsyncThunk : Each separate type of request needs repeated similar implemen
 -   Each of those action types usually has a corresponding action creator function
 -   A thunk has to be written that dispatches the correct actions in the right sequence
 createAsyncThunk abstracts this pattern by generating the action types and action creators and generating a thunk that dispatches those actions.
+
+Why do we use extraReducer?
+The reducers property both creates an action creator function and responds to that action in the slice reducer. The extraReducers allows you to respond to an action in your slice reducer but does not create an action creator function.  You will use reducers most of the time. You would use extraReducers when you are dealing with an action that you have already defined somewhere else. The most common examples are responding to a createAsyncThunk action and responding to an action from another slice.
+
+Extrareducers is actually like reducers with enhancements, but it's been built to handle more options, esecially other actions (like the ones generated in other slices or actions made by createAction or createAsyncThunk).
+
+The builder function in extraReducers also accepts addDefaultCase and addMatcher in which the addDefaultCase acts as the default case in switch statement used by conventional reducers (reducers in the redux without toolkit) and,
